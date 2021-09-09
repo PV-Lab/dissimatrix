@@ -3,14 +3,14 @@ This documentation is prepared as the workflow to accompany the following study:
 
 **"Tailoring capping-layer composition for improved stability of mixed-halide perovskites"**
 
-Noor Titan Putri Hartono (1), Marie-Hélène Tremblay (2), Sarah Wieghold (3), Benjia Dou (1), Janak Thapa (1), Armi Tiihonen (1), Vladimir Bulovic (1), Lea Nienhaus (4), Seth R. Marder (2,5-8), Shijing Sun (1), Tonio Buonassisi (1)
+Noor Titan Putri Hartono (1), Marie-Hélène Tremblay (2), Sarah Wieghold (3), Benjia Dou (1), Janak Thapa (1), Armi Tiihonen (1), Vladimir Bulovic (1), Lea Nienhaus (4), Seth R. Marder (2,5-8), Tonio Buonassisi (1), Shijing Sun (1)
 
 Affiliations:
 
 1. Massachusetts Institute of Technology, 77 Massachusetts Avenue, Cambridge, MA 02139
 2. Georgia Institute of Technology, North Avenue, Atlanta, GA 30332
 3. Argonne National Laboratory, 9700 S. Cass Avenue, Lemont, IL 60439
-4. Florida State University, 600 W College Ave, Tallahassee, FL 32306
+4. Florida State University, Department of Chemistry and Biochemistry, 95 Chieftan Way Tallahassee, FL 32306
 5. University of Colorado Boulder, Renewable and Sustainable Energy Institute, Boulder, CO 80303
 6. University of Colorado Boulder, Department of Chemical and Biological Engineering, Boulder, CO 80303
 7. University of Colorado Boulder, Department of Chemistry, Boulder, CO 80303
@@ -52,7 +52,7 @@ Run the dissimilarity_matrix_all.py file.
 |---|---|
 |**Author(s)** | Noor Titan Putri Hartono |
 |**Version** | 1.0/ August 2021  |   
-|**E-mail(s)**   | nhartono at mit dot edu  |
+|**E-mail(s)**   | noortitan at alum dot mit dot edu  |
 | | |
 
 ## Attribution

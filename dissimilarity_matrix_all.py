@@ -24,7 +24,7 @@ import os
 import pandas as pd
 from collections import OrderedDict
 cmaps = OrderedDict()
-
+import seaborn as sns
 
 #%% User inputs
 
@@ -32,15 +32,21 @@ cmaps = OrderedDict()
 INPUT FOR THE CODE
 
 datapoint: How many data points you want to include in the analysis, default: 341.
+
 frequency: How often the degradation images are taken (every... minutes).
+
 metric: Dissimilarity matrix metric, possible types: 'cosine', 'euclidean',
                 or 'manhattan'.
                 
 MAPbBrContent: Br amount in the absorber (between 0.0-1.0). In this study,
                 the options are: 0, 0.25, 0.5, and 1.0.
+                
 concentration:  Concentration of capping layer precursor.
+
 annealing: Annealing temperature of capping layer film.
+
 capping: Capping layer meaterial being analyzed. For 
+
 folderToSave: Where to save the dissimilarity matrix results, within the 'Results'
                 folder. 
                 
@@ -54,26 +60,26 @@ frequency = 3 # How often the degradation images are taken (every .... minutes)
 # and 9-Cl-capped film of I : Br = 3 : 1, we can input the following:
 
 # Bare films
-MAPbBrContent_1 = 0.25
+MAPbBrContent_1 = 0
 concentration_1 = 0 # Because it's bare film, both concentration and annealing (for capping) is 0s.
 annealing_1 = 0
 
 # PTEAI-capped films
-MAPbBrContent_2 = 0.25
+MAPbBrContent_2 = 0
 concentration_2 = 10 # 10 mM
 annealing_2 = 100 # 100C
 capping_2 = "PTEAI"
 
 # 9-Cl-capped films
-MAPbBrContent_3 = 0.25
+MAPbBrContent_3 = 0
 concentration_3 = 10 # 10 mM
 annealing_3 = 100 # 100C
 capping_3 = "09"
 
 # Dissimilarity matrix metric: euclidean, manhattan, cosine
-metric = "euclidean" 
+metric = "cosine" 
 
-folderToSave = "MAPIBr_3_1"
+folderToSave = "MAPIBr_1_0"
 
 #%% Functions
 
@@ -88,10 +94,10 @@ def combineRGB(location, datapoint, frequency):
     - frequency: the degradation image is taken every ... minutes
     - RETURN: the giant RGB data, with NaN dropped
     """
-    R = pd.read_csv(os.path.join(location,'RGB/Calibrated/sample_r_cal.csv'),header=None)
-    G = pd.read_csv(os.path.join(location,'RGB/Calibrated/sample_g_cal.csv'),header=None)
-    B = pd.read_csv(os.path.join(location,'RGB/Calibrated/sample_b_cal.csv'),header=None)
-    samplename = pd.read_csv(os.path.join(location,'RGB/Calibrated/Samples_cap.csv'))
+    R = pd.read_csv(os.path.join(location,'sample_r_cal.csv'),header=None)
+    G = pd.read_csv(os.path.join(location,'sample_g_cal.csv'),header=None)
+    B = pd.read_csv(os.path.join(location,'sample_b_cal.csv'),header=None)
+    samplename = pd.read_csv(os.path.join(location,'Samples_cap.csv'))
     
     # Subtracting data with the initial RGB value of mean(first 11 data points)
     subtract_datapoint = 11
@@ -116,6 +122,21 @@ def combineRGB(location, datapoint, frequency):
     
     return (RGB_samplename)
 
+#%% Setting up figures and colormaps
+
+if metric=="cosine":
+    cmap = sns.cubehelix_palette(start=.5, rot=-.75, reverse=True, as_cmap=True) # colormap for cosine
+    colorMax = 0.2
+    colorMin = 0
+elif metric=="euclidean":
+    cmap = sns.cubehelix_palette(as_cmap=True, reverse=True)
+    colorMax = 1000
+    colorMin = 0
+else:
+    cmap = sns.cubehelix_palette(start=2, rot=.25, reverse=True, as_cmap=True)
+    colorMax = 30000
+    colorMin = 0
+
 #%% Generating dissimilarity matrix
 
 # Looping for the time range of interest, calculating for dissimilarity matrix
@@ -124,7 +145,7 @@ def combineRGB(location, datapoint, frequency):
 for i in range(datapoint):
     
     # LOADING RGB DATA
-    os.chdir(currentDir+'/DegradationData/')
+    os.chdir(currentDir+'/Dataset/')
     
     # LOADING RGB DATA, 100% MAPI using July samples
     MAPIBr_1_0_1to5 = combineRGB('20200714-R1-TH',i+1,frequency)
@@ -194,31 +215,40 @@ for i in range(datapoint):
     d_absorber = pairwise_distances(sorted_absorber_10mM_100C.drop(sorted_absorber_10mM_100C.iloc[:, 0:9], 
                                            axis = 1), metric=metric) # The first 9 being dropped because they're not actual data
 
+    # Masking upper triangle
+    mask_ut = np.triu(np.ones_like(d_absorber,dtype=bool))    
     
     # VISUALIZING dissimilarity matrix
     
-    # Where to save the 
-    os.chdir(currentDir+'/Results/'+folderToSave+'/bare_cap9_PTEAI/')
+    # Defining where to save the figure
+    os.chdir(currentDir+'/Results/'+metric+'/'+folderToSave+'/bare_cap9_PTEAI/')
    
-    plt.figure(i+1,figsize=(8,6),dpi=300) # for all use 10,10; 8,6 for subsets
+    # Plot the dissimilarity matrix
+    fig = plt.figure(i+1,figsize=(8,6),dpi=300) # for all use 10,10; 8,6 for subsets
+    ax = fig.add_subplot(111)
     plt.rcParams['font.family'] = 'Arial'
     plt.rcParams['font.size'] = 24 # for all: 20, 24 for subsets
-    plt.clf()
-    plt.imshow(d_absorber)
+    ax = sns.heatmap(d_absorber, mask=mask_ut, cmap=cmap, vmax=colorMax,
+                vmin=colorMin, square=True)
     
-    plt.xlabel('Samples')
-    plt.ylabel('Samples')
+    ax.set_xlabel('Samples') # Labeling x-axis
+    ax.set_ylabel('Samples') # Labeling y-axis
     
-    # For any Br-mixed films
-    plt.xticks(np.array([5.5,13,16.5]),('Bare','Cap9','PTEAI'))
-    plt.yticks(np.array([5.5,13,16.5]),('Bare','Cap9','PTEAI'))
+    # Labeling x-ticks and y-ticks
+    if MAPbBrContent_1 == 0:
+        # For just I (0 Br) films
+        plt.xticks(np.array([5.5,13,16]),('Bare','PTEAI','9-Cl'))
+        plt.yticks(np.array([6,13,16.5]),('Bare','PTEAI','9-Cl'))
+        # plt.xticks(np.array([5.5,13]),('Bare','PTEAI'))
+        # plt.yticks(np.array([6,13]),('Bare','PTEAI'))
+    else:
+        # For any Br-mixed films 
+        plt.xticks(np.array([6,14,17]),('Bare','PTEAI','9-Cl'))
+        plt.yticks(np.array([7,14,17.5]),('Bare','PTEAI','9-Cl'))
     
-    # For just I (0 Br) films
-    # plt.xticks(np.array([5,12,15.5]),('Bare','Cap9','PTEAI'))
-    # plt.yticks(np.array([5,12,15.5]),('Bare','Cap9','PTEAI'))
+    # Saving the figure
+    fig.savefig('barecap9PTEAI_'+str(f'{i:03}')+'.png') 
     
-    plt.clim(0,1e3) # Adjust colorbar range
-    # plt.xlim([-0.5,9.5]) # Adjust xlim 
-    plt.colorbar()
-    plt.savefig('barecap9PTEAI_'+str(f'{i:03}')+'.png') # How to save the files
+    # Closing the figure
+    plt.close('all')
 

@@ -31,27 +31,35 @@ conda install -c anaconda spyder
 OR clone the following repository: `pip install -r requirements.txt`
 
 ## Workflow
-The raw image data (.bmp files) needs to be processed first, to extract the average red, green, and blue (RGB) values over time for each samples. The dataset result is shown in DegradationData/(DegradationRun)/RGB/Calibrated folder.
+The raw image data (.bmp files) needs to be processed first, to extract the average red, green, and blue (RGB) values over time for each samples. The dataset result is shown in `Dataset/(DegradationRun)` folder.
+
+There are several datasets available.
+1. `sample_r_cal.csv`, `sample_g_cal.csv`, `sample_b_cal.csv`: The average RGB values over time.
+2. `times.csv`: The degradation time.
+3. `Samples_cap.csv`: The sample list for each batch, with the basic information on the absorber, type of capping layer materials, and processing conditions.
+4. `Samples_cap_merit.csv`: The sample list for each batch, including the instability index results for each RGB channel. 
 
 Based on this data, we can calculate the dissimilarity matrix.
 
 In dissimilarity_matrix_all.py, there are different inputs that you can change.
 1. `datapoint`: How many time points you would like to include in the analysis.
 2. `frequency`: How often the degradation images are taken.
-3. `MAPbBrContent_1, MAPbBrContent_2, MAPbBrContent_3`: The amount of MAPbBr<sub>3</sub> of interest.
-4. `concentration_1, concentration_2, concentration_3`: The concentration of capping layers of interest.
-5. `annealing_1, annealing_2, annealing_3`: The annealing temperature for the capping layers of interest.
-6. `capping_2, capping_3`: Capping layer materials of interest.
+3. `MAPbBrContent_1`, `MAPbBrContent_2`, `MAPbBrContent_3`: The amount of MAPbBr<sub>3</sub> of interest.
+4. `concentration_1`, `concentration_2`, `concentration_3`: The concentration of capping layers of interest.
+5. `annealing_1`, `annealing_2`, `annealing_3`: The annealing temperature for the capping layers of interest.
+6. `capping_2`, `capping_3`: Capping layer materials of interest.
 7. `metric`: The dissimilarity matrix distance measure, can be 'euclidean', 'cosine', or 'manhattan'.
 8. `folderToSave`: Where to save the analysis results.
 
-Run the dissimilarity_matrix_all.py file.
+Run the dissimilarity_matrix_all.py file. This will generate dissimilarity matrix for bare, 9-Cl-capped, and PTEAI-capped films with different types of absorbers.
+
+In the `Results` folder, there are dissimilarity matrix results for different metrics: 'cosine', 'euclidean', and 'manhattan'. There is also a folder called `dissValues` which contains the dissimilarity values for different capping-absorber pairs.
 
 ## Authors
 | |  | 
 |---|---|
 |**Author(s)** | Noor Titan Putri Hartono |
-|**Version** | 1.0/ August 2021  |   
+|**Version** | 1.0/ September 2021  |   
 |**E-mail(s)**   | noortitan at alum dot mit dot edu  |
 | | |
 
